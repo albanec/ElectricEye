@@ -11,17 +11,18 @@ source("lib/libCluster.R")
 source("lib/libLabsAnalysis.R")
 #
 ## исходные данные
-# путь к обрабатываемому файлу
-file.path <- "test_data.csv"
-# столбцы с переменными 
+# путь к обрабатываемому файлу 
+file.path <- "temp/test_data.csv"
+# номера столбцов с переменными 
 var.list <- c(26, 27, 28)
-# число месяцев торговли
+# число месяцев торговли (зависит от оптимизации в tslab)
 m <- 12
-# квантиль доходности
-qLevel <- 0.6
+# квантиль доходности (по умолчанию выставлено наиболее оптимальное значение)
+qLevel <- 0.5
 # количество знаков после запятой (в значениях точек центров кластеров)
-varDigits <- 3
-# метод кластеризации (по умолчанию = FALSE (обычный kmean))
+varDigits <- 2
+# метод кластеризации (по умолчанию = FALSE (обычный kmean - показывает лучшие результаты в торговле, 
+  # хоть и менее точен))
 kmeanpp <- FALSE
 #
 ## обработка .csv файла 
@@ -30,13 +31,14 @@ kmeanpp <- FALSE
 data <- AllPreparation_LabsFile(file.path = file.path, 
                                 var.list = var.list, profit = 3, draw = 9, 
                                 m = m, 
-                                q.hi = qLevel, hi = TRUE)
+                                q.hi = qLevel, hi = TRUE,
+                                one.scale = TRUE)
 data$profit <- NULL
 data$draw <- NULL
 #
 ## вычисление кластеров
 # вычисление параметров кластеризации 
-clustPar.data <- CalcKmean_Parameters(data, iter.max = 100, plusplus = FALSE, test.range = 30)
+clustPar.data <- CalcKmean_Parameters(data, iter.max = 100, plusplus = kmeanpp, test.range = 30)
 # вычисление самох кластеров
 clustFull.data <- CalcKmean(data, clustPar.data[[2]], plusplus = kmeanpp, var.digits = varDigits)
 # вывод данных
