@@ -352,7 +352,12 @@ AllPreparation_LabsFile <- function(file.path, sep = ";",
   # data: полностью обработанные данные
   # ----------
   #
-  data <- Parse_LabsCSV(autoParse = TRUE, file.path = file.path, sort = FALSE, var.names = FALSE, sep)
+  if (autoParse == TRUE) {
+    data <- Parse_LabsCSV(autoParse = TRUE, file.path = file.path, sort = FALSE, var.names = FALSE, sep)
+  } else {
+    data <- Parse_LabsCSV(autoParse = FALSE, file.path = file.path, sort = FALSE, var.names = FALSE, sep, 
+                          var.list, profit, draw)
+  }
   if (tslab == FALSE) {
     data$var0 <- BotNumSetLabsFile(data, bot.num.table)  
     data <- FilterDuplicatedRow_LabsFile(data)
