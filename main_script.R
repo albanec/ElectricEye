@@ -6,9 +6,9 @@ library(magrittr)
 library(plotly)
 #
 ### подгрузка библиотек
-source("lib/libGeneric.R")
-source("lib/libCluster.R")
-source("lib/libLabsAnalysis.R")
+source("lib/Generic/libGeneric.R")
+source("lib/Cluster/libCluster.R")
+source("lib/LabsAnalysis/libLabsAnalysis.R")
 #
 ### исходные данные
 # путь к обрабатываемому файлу 
@@ -32,7 +32,7 @@ kmeanpp <- FALSE
 #### обработка .csv файла 
 # (полный набор обработки - парсинг, исправление возможных ошибок 
   # и добавление нормированного к просадке и году доходу, вычисление квантиля по доходу)
-data <- AllPreparation_LabsFile(file.path = file.path, 
+data <- AllPreparation_LabsFile(file.path = file.path, sep = ";", 
                                 autoParse, 
                                 m = m, 
                                 q.hi = qLevel, hi = TRUE,
