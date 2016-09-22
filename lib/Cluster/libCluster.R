@@ -1,14 +1,15 @@
+###
+#' Определение оптимального числа k-mean кластеров
+#' 
+#' @param data подготовленные результаты отработки бэктеста 
+#' (должны содержать в себе только переменные и нужные метрики)
+#' @param plusplus: использовать простой k-mean или k-mean++
+#' @param iter.max: число итераций k-mean
+#'
+#' @return ss.df DF суммарного отклонения по кластерам
+#'
+#' @export
 CalcKmean_Parameters <- function(data, test.range = 30, iter.max = 100, plusplus = FALSE) {
-  # ----------
-  # Общее описание:
-  # функция определения оптимального числа k-mean кластеров
-  # Входные данные:
-  # data: подготовленные результаты отработки бэктеста (должны содержать в себе только переменные и нужные метрики)
-  # plusplus: использовать простой k-mean или k-mean++
-  # iter.max: число итераций k-mean
-  # Выходные данные:
-  # ss.df: df суммарного отклонения по кластерам
-  # ----------
   #
   cluster.range <- 2:test.range
   #Isolate required features
@@ -35,7 +36,11 @@ CalcKmean_Parameters <- function(data, test.range = 30, iter.max = 100, plusplus
                       Pct.Exp = p.exp)
   # вычисление оптимального количества кластеров
   # byVar: опт. число кластеров определяется как min число, описывающее 90% пространства
-  n.byVar <- min(which(p.exp > 0.9) )
+  n.byVar <- 
+    {
+      min(which(ss.df$Pct.Exp > 0.9))
+    } %>%
+    ss.df$Num.Of.Clusters[.]
   # byElbow: опт. число определяется "методом локтя"
   #n.byElbow <- FindMaxDistancePoint(ss.df$p.exp[-1]) + 1
   #n <- c(n.byVar, n.byElbow)
@@ -45,17 +50,17 @@ CalcKmean_Parameters <- function(data, test.range = 30, iter.max = 100, plusplus
   return(list(ss.df, n.opt))
 }
 #
+###
+#' Функция вычисления модного k-mean++ 
+#' 
+#' @param data Подготовленные данные
+#' @param n.opt Оптимальное число кластеров для заданного набора данных
+#' @param iter.max Количество итераций вычислений кластера
+#'
+#' @return cluster.data Лист с данными кластера
+#'
+#' @export
 CalcKmean_PlusPlus <- function(data, n.opt, iter.max = 100) {
-  # ----------
-  # Общее описание:
-  #   функция вычисления модного k-mean++ 
-  # Входные данные:
-  # data: подготовленные данные
-  # n.opt: оптимальное число кластеров для заданного набора данных
-  # iter.max: количество итераций вычислений кластера
-  # Выходные данные:
-  # cluster.data: лист с данными кластера
-  # ----------
   #
   # количество точек
   n <- nrow(data)
@@ -123,19 +128,19 @@ CalcKmean_PlusPlus <- function(data, n.opt, iter.max = 100) {
   return(cluster.data)
 }
 #
+###
+#' Функция вычисления k-mean кластеров 
+#' 
+#' @param data Подготовленные данные
+#' @param n.opt Оптимальное число кластеров для заданного набора данных
+#' @param iter.max Количество итераций вычислений кластера
+#' @param plusplus Использовать простой k-mean или k-mean++
+#' @param var.digits Количество занаков после точки в значениях центров кластеров
+#'
+#' @return list(data, cluster.centers) Лист с данными (сод. номера кластеров) + df с центрами кластеров
+#'
+#' @export
 CalcKmean <- function(data, n.opt, iter.max = 100, plusplus = FALSE, var.digits = 0) {
-  # ----------
-  # Общее описание:
-  # функция вычисления k-mean кластеров
-  # Входные данные:
-  # data: подготовленные данные
-  # iter.max: количество итераций вычислений кластера
-  # n.opt: оптимальное число кластеров для заданного набора данных
-  # plusplus: использовать простой k-mean или k-mean++
-  # var.digits: количество занаков после точки в значениях центров кластеров
-  # Выходные данные:
-  # list(data, cluster.centers): лист с данными (сод. номера кластеров) + df с центрами кластеров
-  # ----------
   #
   # вычисление кластера
   if (plusplus == TRUE) {
@@ -154,15 +159,16 @@ CalcKmean <- function(data, n.opt, iter.max = 100, plusplus = FALSE, var.digits 
   # return(data)
 }
 #
+###
+#' Функция визуализации вычисления оптимального количества кластеров
+#' 
+#' @param data (=ss.df) DF суммарной дисперсии по кластерам
+#' @param n.opt Оптимальное число кластеров для заданного набора данных
+#'
+#' @return 
+#'
+#' @export
 PlotKmean_SS <- function(ss.df, n.opt) {
-  # ----------
-  # Общее описание:
-  #   функция визуализации вычисления оптимального количества кластеров
-  # Входные данные:
-  #   data: (=ss.df) df суммарной дисперсии по кластерам
-  # n.opt: оптимальное число кластеров для заданного набора данных
-  # Выходные данные:
-  # p: график
   # Зависимости:
   require(plotly)
   # ----------
@@ -178,24 +184,31 @@ PlotKmean_SS <- function(ss.df, n.opt) {
     return(p)
 }  
 #
+###
+#' Функция визуализации найденных кластеров
+#' 
+#' @param data.list Лист, содержащий в себе данные и центры кластеров
+#' @param dimension 3D/2D
+#' @param plot.title Название графика
+#' @param xaxis.name Название оси X
+#' @param yaxis.name Название оси Y
+#' @param zaxis.name Название оси Z
+#' @param point.size Размер точек
+#' @param point.opacity Прозрачность точек
+#' @param point.line.width Толщина линии-"подводки точек"
+#' @param point.opacity Прозрачность линии-"подводки точек"
+#' @param center.size Размер точек-центров кластеров
+#' @param center.color Цвет точек-центров кластеров
+#'
+#' @return 
+#'
+#' @export
 PlotKmean_Clusters <- function(data.list, cluster.color = FALSE, dimension = "3d", 
                                plot.title = "ClustersPlot", xaxis.name = "FastMA", yaxis.name = "SlowMA", 
                                zaxis.name = "PER", 
                                point.size = 4, point.opacity = 0.8, 
                                point.line.width = 2, point.line.opacity = 0.5,
                                center.size = 10, center.color = "black") {
-  # ----------
-  # Общее описание:
-  #   функция визуализации найденных кластеров
-  # Входные данные:
-  #   data.list: лист, содержащий в себе данные и центры кластеров
-  #  3D: FALSE/TRUE 
-  #  cluster.color: TRUE/FALSE расцветка точек по профиту или кластеру
-  #   plot.title, xaxis.name, yaxis.name, zaxis.name: название гарфика и осей
-  # point.size, point.opacity, point.line.width, point.line.opacity: отрисовка точек
-  # center.size, center.color: отрисовка центроидов кластеров
-  # Выходные данные:
-  # p: график
   # Зависимости:
   require(plotly)
   # ----------
