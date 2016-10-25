@@ -20,11 +20,11 @@ draw <- 9
 # автоматический парсинг номеров нужных номеров столбцов
 autoParse <- TRUE 
 # число месяцев торговли (зависит от оптимизации в tslab)
-m <- 12
+m <- 24
 # квантиль доходности (по умолчанию выставлено наиболее оптимальное значение)
 qLevel <- 0.5
 # количество знаков после запятой (в значениях точек центров кластеров)
-varDigits <- 2
+varDigits <- 0
 # метод кластеризации (по умолчанию = FALSE (обычный kmean - показывает лучшие результаты в торговле, 
   # хоть и менее точен))
 kmeanpp <- FALSE
@@ -62,7 +62,7 @@ dim <- ifelse(n.vars == 3,
 if (is.na(dim)) {
   stop(paste("PlotKmean_Clusters:  Dimension error!!!", sep = ""))
 } else {
-  PlotKmean_Clusters(data.list=clustFull.data, cluster.color = FALSE, dimension = dim, 
+  PlotKmean_Clusters(data.list = clustFull.data, cluster.color = FALSE, dimension = dim, 
                      plot.title = "ClustersPlot", xaxis.name = "FastMA", yaxis.name = "SlowMA", 
                      zaxis.name = "PER", 
                      point.size = 4, point.opacity = 1, point.line.width = 0.7, point.line.opacity = 0.5,
