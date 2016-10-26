@@ -154,8 +154,6 @@ CalcKmean <- function(data, n.opt, iter.max = 100, plusplus = FALSE, var.digits 
   cluster.centers <- round(cluster.data$centers[, -ncol(cluster.data$centers)], digits = var.digits)
   cluster.centers <- cbind(cluster.centers, round(cluster.data$centers[, ncol(cluster.data$centers)], digits = 3))
   colnames(cluster.centers)[ncol(cluster.centers)] <- 'profit.norm'
-  # соотнесение центров по кластерам
-  cluster.centers$cluster <- 1:nrow(cluster.centers)
   #
   return(list(data, cluster.centers))
   # return(data)
